@@ -1,5 +1,3 @@
-JsonArray data = doc.createNestedArray("data");
-
 int valorht = 0;
 int valorfs = 0;
 float valortc = 0.0;
@@ -35,7 +33,10 @@ void tasks :: call_tasks(){
 
 void tasks :: _5s(){
   valorht = Sen.HumTierra();
-  //Act.read_time();
+  
+  Act.get_format_time();
+  Act.get_format_date();
+  
   if(valorht>700){
     Serial.println("Comenzando riego");
     Act.relay(1);
@@ -45,14 +46,15 @@ void tasks :: _5s(){
   }
 
   Act.printLCD(m4s);
-  data.clear();
-  doc["time"] = 123123123;
   doc["HumedadTierra"] = valorht;
   doc["FotoSensor"] = valorfs;
   doc["Litros/minutos"] = valorcd;
+  doc["Sensor de agua"] = valortc;
   serializeJsonPretty(doc, Serial);
 
-  //Act.writeToMicroSD("/hello.txt", "{time: 312, hum: 123}");
+  Act.JSON();
+  mqtt.reconnect_MQTT ( );
+  mqtt.publish_MQTT ( );
 }
 
 
@@ -60,5 +62,4 @@ void tasks :: _4s(){;
   valorfs = Sen.Fotosensor();
   valortc = Sen.TempClima();
   valorcd = Sen.Caudal(m4s);
-  Serial.println(Act.hora);
 }

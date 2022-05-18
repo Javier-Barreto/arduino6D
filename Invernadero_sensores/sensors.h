@@ -29,7 +29,8 @@ void sensors :: startSensorDS(){
 }
 
 int sensors :: HumTierra(){
-  int SensorValue = analogRead(Pins.PinST);
+  int SensorValue = analogRead(34);
+  Serial.println(SensorValue);
   return SensorValue;
 }
 

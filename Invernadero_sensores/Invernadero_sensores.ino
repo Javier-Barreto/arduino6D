@@ -3,12 +3,15 @@ invernadero_sensores start;
 
 void setup() {
   Serial.begin(115200);
-  start.startConfg();
-  Act.lcd_init();
-  Sen.startSensorDS();
+  start.startConfg(); // Inicializa los pines
+  Act.lcd_init(); //Inicializa el rejol
+  Sen.startSensorDS(); 
   Act.MicroSD_init();
-  attachInterrupt(digitalPinToInterrupt(Pins.PinC), ContarPulsos, RISING);
-  //Act.rtc_init();
+  attachInterrupt(digitalPinToInterrupt(Pins.PinC), ContarPulsos, RISING); //Define el pin con interrupciones para el caudal
+  Act.rtc_init();
+  mqtt.setup_WiFi ( );
+  mqtt.set_MQTT_server ( );
+  client.setCallback(callback);
 }
 
 void loop() {

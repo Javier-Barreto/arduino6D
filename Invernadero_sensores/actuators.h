@@ -16,7 +16,7 @@ class actuators{
     //RTC
     uint8_t hora, minuto, segundo, dia, mes, wday;
     uint16_t ano;
-    String fecha, tiempo;
+    String fecha, tiempo, filename,json_string="" ;
     
     void rtc_init( void );
     void get_time( void );
@@ -56,28 +56,21 @@ long actuators::printLCD( long m4s ){
   lcd.print(Sen.Caudal(m4s));
 }
 
-void actuators::MicroSD_init( void ){
-  //RRTC.get_time();
-  while (!SD.begin(Pins.PinSD)) {
-    Serial.println("Fallo MicroSD, favor de revisar las conexiones");
-  }
-  Serial.println("Se inicializó la MicroSD.");
-}
+
 
 void actuators :: rtc_init( void ){
-  
-  while (! rtc.begin()) {
+  while (! RRTC.begin()) {
     
     Serial.println(F("Hay un error al reconocer el RTC, revise las conexiónes e intente de nuevo"));
     delay(10);
     
   }
-  //rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+  RRTC.adjust(DateTime(2022, 5, 18, 9, 0, 0));
   Serial.println(F("El RTC se ha iniciado correctamente"));
 }
 
 void actuators :: get_time( void ){
-  DateTime now = rtc.now();
+  DateTime now = RRTC.now();
   ano = now.year();
   mes = now.month();
   dia = now.day();
@@ -117,4 +110,52 @@ void actuators :: get_format_time ( void ){
     
   if ( segundo < 10 ) tiempo += '0';
     tiempo += segundo;
+}
+
+
+
+void actuators :: MicroSD_init( void ){
+  while (!SD.begin(MICROSD_PIN)) {
+    Serial.println("Card failed, or not present");
+    // don't do anything more:
+  }
+  Serial.println("card initialized.");
+}
+
+void actuators :: FileID( void ){
+
+  filename = '/';
+
+  if ( dia < 10 ) filename += '0';
+  filename += dia;
+  filename+='-';
+  
+  if ( mes < 10 ) filename += '0';
+  filename += mes;
+  filename+='-';
+  
+  filename += ano;
+
+  filename += EXTENSION;
+}
+
+void actuators :: JSON( void ){
+  doc["Equipo"] = "1 - Alfa Buena maravilla Onda Dinamita Escuadron Lobo";
+  doc["cumpleanos"] = fecha+" "+tiempo;
+
+  JSON_SaveFile( &doc );
+}
+
+void actuators :: JSON_SaveFile( DynamicJsonDocument * doc){
+  
+  FileID ( );
+  json_string = "";
+  MicroSD_File = SD.open ( filename, FILE_APPEND );
+  if (MicroSD_File) {
+    serializeJson(*doc, json_string);
+    MicroSD_File.print(json_string);
+    MicroSD_File.println(",");
+    MicroSD_File.close();
+  }
+
 }

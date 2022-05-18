@@ -1,11 +1,20 @@
+#include <WiFi.h>
+  WiFiClient ESP32_WIFI;
+  
+#define MICROSD_PIN 5
+#define EXTENSION ".json"
+
+#include <PubSubClient.h>
+  PubSubClient client ( ESP32_WIFI );
+  
 //ARDUINO JSON
 #include <ArduinoJson.h>
 DynamicJsonDocument doc(1024);
-
+  
 // Micro SD adapter
-#include "FS.h"
-#include "SD.h"
-#include "SPI.h"
+#include <SD.h>
+#include <SPI.h>
+File MicroSD_File;
 
 //DISPLAY LCD
 #include <Wire.h>
@@ -14,7 +23,8 @@ LiquidCrystal_I2C lcd(0x27,16,2);//0x27
 
 //RELOJ
 #include "RTClib.h"
-RTC_DS1307 rtc;
+RTC_DS1307 RRTC;
+
 
 //PINES
 #include "pines.h"
@@ -23,9 +33,11 @@ pines Pins;
 
 //SENSORES
 #include <OneWire.h>
+OneWire tempClima(Pins.PinC);
+
 #include <DallasTemperature.h>
-OneWire tempClima(Pins.PinSD);//Sensor temperatura "clima"
 DallasTemperature sensorDS18B20(&tempClima);
+
 #include "sensors.h"
 sensors Sen;
 
@@ -34,7 +46,9 @@ sensors Sen;
 #include "actuators.h"
 actuators Act;
 
-
+#include "MQTT.h"
+ MQTT mqtt;
+ 
 //TASKS
 #include "tasks.h"
 tasks Tasks;
@@ -47,7 +61,7 @@ class invernadero_sensores {
 
 void invernadero_sensores::startConfg(){
   //Pins de entrada de valores de sensores
-  pinMode(Pins.PinST, INPUT);//,Sensor temperatura tierra
+  pinMode(Pins.PinST, INPUT);//Sensor temperatura tierra
   pinMode(Pins.PinFS, INPUT); //Fotosensor
   pinMode(Pins.PinC, INPUT); //Caudal
   
