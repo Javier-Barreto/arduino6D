@@ -8,5 +8,5 @@ class pines{
     int PinST = 34;//Sensor de tierra
     int PinFS = 35;//Fotosensor
     int PinSC = 13;//Sensor del clima/agua
-    int PinC = 33; //Caudal
+    int PinC = 32; //Caudal
 };

@@ -141,7 +141,7 @@ void actuators :: FileID( void ){
 
 void actuators :: JSON( void ){
   doc["Equipo"] = "1 - Alfa Buena maravilla Onda Dinamita Escuadron Lobo";
-  doc["cumpleanos"] = fecha+" "+tiempo;
+  doc["tiempo"] = fecha+" "+tiempo;
 
   JSON_SaveFile( &doc );
 }
