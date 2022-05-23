@@ -33,7 +33,7 @@ pines Pins;
 
 //SENSORES
 #include <OneWire.h>
-OneWire tempClima(Pins.PinC);
+OneWire tempClima(13);
 
 #include <DallasTemperature.h>
 DallasTemperature sensorDS18B20(&tempClima);

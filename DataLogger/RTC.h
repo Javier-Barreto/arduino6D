@@ -19,7 +19,7 @@ void DS1307_RTC :: rtc_init( void ){
     delay(10);
     
   }
-  //rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+  rtc.adjust(DateTime(F("22/08/2001"), F(__TIME__)));
   Serial.println(F("El RTC se ha iniciado correctamente"));
 }
 

@@ -2,10 +2,11 @@
 class actuators{
   public:
     void relay( int );
+    bool BombState;
 
     //LCD (display)
     void lcd_init( void );
-    long printLCD( long );
+    long printLCD( void );
     
     //MircoSD
     void MicroSD_init( void );
@@ -29,9 +30,11 @@ void actuators::relay(int value){
   {
     Serial.println("Encendiendo bomba");
     digitalWrite(Pins.PinRB, LOW);
+    BombState = true;
   } else {
     Serial.println("Apagando bomba");
     digitalWrite(Pins.PinRB, HIGH);
+    BombState = false;
   }
 }
 
@@ -41,7 +44,7 @@ void actuators::lcd_init( void ){
   lcd.backlight();
 }
 
-long actuators::printLCD( long m4s ){
+long actuators::printLCD( ){
   lcd.setCursor(0,0);
   lcd.print("H: ");
   lcd.print(Sen.HumTierra());
@@ -53,7 +56,7 @@ long actuators::printLCD( long m4s ){
   lcd.print(Sen.TempClima());
   lcd.setCursor(8,1);
   lcd.print("L:");
-  lcd.print(Sen.Caudal(m4s));
+  lcd.print(Sen.Caudal());
 }
 
 
@@ -65,7 +68,7 @@ void actuators :: rtc_init( void ){
     delay(10);
     
   }
-  RRTC.adjust(DateTime(2022, 5, 18, 9, 0, 0));
+  //RRTC.adjust(DateTime(2022, 5, 18, 9, 0, 0));
   Serial.println(F("El RTC se ha iniciado correctamente"));
 }
 
@@ -140,9 +143,6 @@ void actuators :: FileID( void ){
 }
 
 void actuators :: JSON( void ){
-  doc["Equipo"] = "1 - Alfa Buena maravilla Onda Dinamita Escuadron Lobo";
-  doc["tiempo"] = fecha+" "+tiempo;
-
   JSON_SaveFile( &doc );
 }
 

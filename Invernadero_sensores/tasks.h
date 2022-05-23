@@ -1,8 +1,3 @@
-int valorht = 0;
-int valorfs = 0;
-float valortc = 0.0;
-float valorcd = 0;
-
 class tasks {
   //variables
   public:
@@ -32,34 +27,38 @@ void tasks :: call_tasks(){
 
 
 void tasks :: _5s(){
-  valorht = Sen.HumTierra();
+  mqtt.reconnect_MQTT ( );
   
-  Act.get_format_time();
-  Act.get_format_date();
-  
-  if(valorht>700){
+  if(Sen.HumTierra()>700){
     Serial.println("Comenzando riego");
     Act.relay(1);
   } else {
     Serial.println("Deteniendo riego");
     Act.relay(0);
   }
-
-  Act.printLCD(m4s);
-  doc["HumedadTierra"] = valorht;
-  doc["FotoSensor"] = valorfs;
-  doc["Litros/minutos"] = valorcd;
-  doc["Sensor de agua"] = valortc;
+ 
+  doc.clear();
+  doc["HumedadTierra"] = Sen.HumTierra();
+  doc["FotoSensor"] = Sen.Fotosensor();
+  doc["Litros/minutos"] = Sen.Caudal();
+  doc["Sensor de agua"] = Sen.TempClima();
+  doc["Equipo"] = "1 - Alfa Buena maravilla Onda Dinamita Escuadron Lobo";
+  doc["tiempo"] = Act.fecha+" "+Act.tiempo;
+  if (Act.BombState==true)
+    doc["BombaAgua"] = "Se activo la bomba el " + Act.fecha+" a las "+Act.tiempo;
+    
   serializeJsonPretty(doc, Serial);
 
-  Act.JSON();
-  mqtt.reconnect_MQTT ( );
+    
+  Act.printLCD();
+
   mqtt.publish_MQTT ( );
+  
+  Act.JSON();
 }
 
 
-void tasks :: _4s(){;
-  valorfs = Sen.Fotosensor();
-  valortc = Sen.TempClima();
-  valorcd = Sen.Caudal(m4s);
+void tasks :: _4s(){
+  Act.get_format_time();
+  Act.get_format_date();
 }
